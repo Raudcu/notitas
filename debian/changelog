@@ -1,6 +1,7 @@
-notitas (0.3.1) noble; urgency=medium
+notitas (0.3.2) noble; urgency=medium
 
-  * Los atajos de Notitas ya no pueden borrar los atajos personalizados de otros programas: si la app no lee la configuración de GNOME de la sesión, no los toca.
+  * Las notas nuevas se agregan al final (orden de creación).
+  * El ícono de Notitas se ve en el Dash mientras está abierta.
 
- -- Lucas Pili <lucas.pili@zoomagri.com>  Sat, 26 Sep 2026 23:57:48 -0300
+ -- Lucas Pili <lucas.pili@zoomagri.com>  Sun, 27 Sep 2026 00:41:22 -0300
 
