@@ -7,6 +7,8 @@ from .noteview import NoteView
 from .store import MAX_NUMBER, PALETTE
 
 CARD_SIZE = 190
+# Lo que se arrastra es texto: el id de una nota, o este prefijo + el id de una categoría.
+CATEGORY_DRAG = "categoria:"
 
 
 class NotesWindow(Adw.ApplicationWindow):
@@ -140,8 +142,17 @@ class NotesWindow(Adw.ApplicationWindow):
             count = len(store.notes_in(cat.id))
             row = Adw.ActionRow(title=cat.name, subtitle=f"{count} nota{'s' if count != 1 else ''}")
             row.cat_id = cat.id
+            # Arrastrar la categoría para reordenarla…
+            source = Gtk.DragSource(actions=Gdk.DragAction.MOVE)
+            source.connect("prepare", lambda *_a, cid=cat.id: Gdk.ContentProvider.new_for_value(CATEGORY_DRAG + cid))
+            source.connect("drag-begin", lambda src, _d, r=row: src.set_icon(Gtk.WidgetPaintable(widget=r), 20, 20))
+            row.add_controller(source)
+            # …y soltar sobre ella otra categoría (reordenar) o una nota (moverla ahí).
             drop = Gtk.DropTarget.new(str, Gdk.DragAction.MOVE)
-            drop.connect("drop", self._on_drop_on_category, cat.id)
+            drop.set_preload(True)
+            drop.connect("motion", self._on_category_drag_motion, row)
+            drop.connect("leave", lambda *_a, r=row: self._mark_category_drop(r, None))
+            drop.connect("drop", self._on_drop_on_category, cat.id, row)
             row.add_controller(drop)
             self.cat_list.append(row)
             if cat.id == self.current_cat:
@@ -178,9 +189,27 @@ class NotesWindow(Adw.ApplicationWindow):
         if card and note:
             card.update(note)
 
-    def _on_drop_on_category(self, _target, note_id, _x, _y, cat_id):
-        # Se difiere: mover la nota reconstruye la lista mientras termina el arrastre.
-        GLib.idle_add(lambda: self.store.move_note(note_id, category_id=cat_id) and False)
+    def _on_category_drag_motion(self, target, _x, y, row):
+        value = target.get_value()
+        if isinstance(value, str) and value.startswith(CATEGORY_DRAG):
+            self._mark_category_drop(row, "below" if y > row.get_height() / 2 else "above")
+        return Gdk.DragAction.MOVE
+
+    def _mark_category_drop(self, row, side):
+        for s in ("above", "below"):
+            row.remove_css_class(f"drop-{s}")
+        if side:
+            row.add_css_class(f"drop-{side}")
+
+    def _on_drop_on_category(self, _target, value, _x, y, cat_id, row):
+        self._mark_category_drop(row, None)
+        # Se difiere: mover reconstruye la lista mientras termina el arrastre.
+        if value.startswith(CATEGORY_DRAG):
+            after = y > row.get_height() / 2
+            dragged = value[len(CATEGORY_DRAG):]
+            GLib.idle_add(lambda: self.store.move_category(dragged, cat_id, after=after) and False)
+        else:
+            GLib.idle_add(lambda: self.store.move_note(value, category_id=cat_id) and False)
         return True
 
     def _on_search_mode(self, bar, _pspec):
@@ -318,6 +347,7 @@ class NoteCard(Gtk.FlowBoxChild):
         self.add_controller(source)
 
         target = Gtk.DropTarget.new(str, Gdk.DragAction.MOVE)
+        target.set_preload(True)
         target.connect("motion", self._on_drag_motion)
         target.connect("leave", lambda *_: self._mark_drop(None))
         target.connect("drop", self._on_drop)
@@ -327,7 +357,10 @@ class NoteCard(Gtk.FlowBoxChild):
         source.set_icon(Gtk.WidgetPaintable(widget=self.box), CARD_SIZE // 2, 20)
         self.add_css_class("dragging")
 
-    def _on_drag_motion(self, _target, x, _y):
+    def _on_drag_motion(self, target, x, _y):
+        value = target.get_value()
+        if isinstance(value, str) and value.startswith(CATEGORY_DRAG):
+            return 0  # una categoría no se suelta sobre una tarjeta
         self._mark_drop("after" if x > self.get_width() / 2 else "before")
         return Gdk.DragAction.MOVE
 
@@ -339,6 +372,8 @@ class NoteCard(Gtk.FlowBoxChild):
 
     def _on_drop(self, _target, note_id, x, _y):
         self._mark_drop(None)
+        if note_id.startswith(CATEGORY_DRAG):
+            return False
         after = x > self.get_width() / 2
         GLib.idle_add(lambda: self.window.store.move_note(note_id, self.note_id, after=after) and False)
         return True

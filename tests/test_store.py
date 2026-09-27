@@ -59,11 +59,22 @@ class StoreTest(unittest.TestCase):
         b = self.store.add_note(cat, "B")
         self.assertEqual([n.id for n in self.store.notes_in(cat)], [self.note.id, a.id, b.id])
 
+    def test_move_category(self):
+        a = self.store.categories[0]
+        b = self.store.add_category("B")
+        c = self.store.add_category("C")
+        self.store.move_category(c.id, a.id)
+        self.assertEqual([x.name for x in self.store.categories], ["C", a.name, "B"])
+        self.store.move_category(c.id, b.id, after=True)
+        self.assertEqual([x.name for x in self.store.categories], [a.name, "B", "C"])
+        self.assertEqual([x.name for x in self.reload().categories], [a.name, "B", "C"])
+
     def test_move_note(self):
         cat = self.store.add_category("Otra")
         a = self.store.add_note(self.store.categories[0].id, "A")
+        b = self.store.add_note(cat.id, "B")
         self.store.move_note(a.id, category_id=cat.id)
-        self.assertEqual([n.title for n in self.store.notes_in(cat.id)], ["A"])
+        self.assertEqual([n.title for n in self.store.notes_in(cat.id)], ["B", "A"])  # llega al final
         self.store.move_note(a.id, target_id=self.note.id, after=True)
         self.assertEqual([n.id for n in self.store.notes_in(self.note.category_id)], [self.note.id, a.id])
 

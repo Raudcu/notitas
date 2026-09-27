@@ -84,6 +84,8 @@ expander.archive arrow { color: alpha(#2b2b2b, 0.6); }
 flowboxchild.dragging { opacity: 0.35; }
 flowboxchild.drop-before { box-shadow: inset 4px 0 0 @accent_bg_color; }
 flowboxchild.drop-after { box-shadow: inset -4px 0 0 @accent_bg_color; }
+row.drop-above { box-shadow: inset 0 3px 0 @accent_bg_color; }
+row.drop-below { box-shadow: inset 0 -3px 0 @accent_bg_color; }
 
 window.quick { border-radius: 0; }
 window.quick .quick-frame { border-top: 6px solid alpha(black, 0.15); }

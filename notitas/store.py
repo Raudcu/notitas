@@ -321,6 +321,16 @@ class Store(GObject.Object):
             self._schedule_save()
             self.emit("changed")
 
+    def move_category(self, cat_id, target_id, after=False):
+        """Reordena: pone la categoría antes (o después) de otra."""
+        cat, target = self.category(cat_id), self.category(target_id)
+        if not cat or not target or cat is target:
+            return
+        self.categories.remove(cat)
+        self.categories.insert(self.categories.index(target) + (1 if after else 0), cat)
+        self._schedule_save()
+        self.emit("changed")
+
     def delete_category(self, cat_id):
         self.categories = [c for c in self.categories if c.id != cat_id]
         self.notes = [n for n in self.notes if n.category_id != cat_id]
@@ -370,7 +380,7 @@ class Store(GObject.Object):
             self.emit("changed")
 
     def move_note(self, note_id, target_id=None, after=False, category_id=None):
-        """Mueve una nota antes/después de otra, o al principio de una categoría."""
+        """Mueve una nota antes/después de otra, o al final de una categoría."""
         note = self.note(note_id)
         if not note or note_id == target_id:
             return
@@ -381,7 +391,7 @@ class Store(GObject.Object):
             index = self.notes.index(target) + (1 if after else 0)
         else:
             note.category_id = category_id or note.category_id
-            index = 0
+            index = len(self.notes)
         self.notes.insert(index, note)
         self._schedule_save()
         self.emit("changed")

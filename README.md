@@ -56,14 +56,15 @@ cuándo la tildaste), como un *blame*.
 
 ### Organizar
 
-- **Categorías** a la izquierda: se crean con **+** y se renombran o eliminan
-  desde el menú **⋮** de arriba a la derecha.
+- **Categorías** a la izquierda: se crean con **+**, se reordenan arrastrándolas
+  y se renombran o eliminan desde el menú **⋮** de arriba a la derecha.
 - **Notas**: *Nueva nota* crea una al final de la categoría abierta. Abierta, se le cambia
   el título, el **color** (7), el **número** del atajo (1–9, o ninguno) y la
   categoría; el tacho la elimina. Los números son únicos: si le das uno que ya
   tenía otra nota, se lo saca a esa.
-- **Orden**: arrastrá una tarjeta para reordenarla, o soltala sobre una
-  categoría para moverla ahí.
+- **Orden**: las notas quedan en orden de creación (la más nueva al final).
+  Arrastrá una tarjeta para reordenarla, o soltala sobre una categoría para
+  moverla ahí.
 - **Clic derecho** en una tarjeta: abrirla o despegarla como post-it flotante.
 - **Buscar** (`Ctrl+F` o la lupa): en todas las notas y categorías, incluidas
   las archivadas; resalta lo encontrado y muestra de qué categoría es cada nota.
