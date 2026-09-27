@@ -157,10 +157,13 @@ class PreferencesDialog(Adw.Dialog):
     def _apply_shortcuts(self):
         from .app import launcher_command
 
-        if self.shortcuts_row.get_active():
-            shortcuts.install(launcher_command())
-        else:
-            shortcuts.uninstall()
+        try:
+            if self.shortcuts_row.get_active():
+                shortcuts.install(launcher_command())
+            else:
+                shortcuts.uninstall()
+        except RuntimeError as e:
+            self.toasts.add_toast(Adw.Toast(title=str(e), timeout=8))
 
     def _apply_autostart(self):
         from .app import launcher_command

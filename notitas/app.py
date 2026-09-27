@@ -51,14 +51,18 @@ class NotitasApp(Adw.Application):
             config.set_notes_dir(options.lookup_value("notes-dir").get_string())
             print(f"Las notas se guardan en {config.notes_file()}")
             return 0
-        if options.contains("install-shortcuts"):
-            shortcuts.install(launcher_command())
-            print("Atajos Ctrl+Alt+0…9 y Ctrl+Alt+Shift+1…9 registrados en GNOME.")
-            return 0
-        if options.contains("uninstall-shortcuts"):
-            shortcuts.uninstall()
-            print("Atajos quitados.")
-            return 0
+        try:
+            if options.contains("install-shortcuts"):
+                shortcuts.install(launcher_command())
+                print("Atajos Ctrl+Alt+0…9 y Ctrl+Alt+Shift+1…9 registrados en GNOME.")
+                return 0
+            if options.contains("uninstall-shortcuts"):
+                shortcuts.uninstall()
+                print("Atajos quitados.")
+                return 0
+        except RuntimeError as e:
+            print(e, file=sys.stderr)
+            return 1
         return -1
 
     def do_startup(self):
@@ -130,7 +134,10 @@ class NotitasApp(Adw.Application):
         """Si el programa cambió de lugar (p. ej. de ~/.local al .deb), actualizar los atajos."""
         current = shortcuts.installed_command()
         if current and current != launcher_command():
-            shortcuts.install(launcher_command())
+            try:
+                shortcuts.install(launcher_command())
+            except RuntimeError as e:
+                print(e, file=sys.stderr)
         if config.autostart_enabled():
             config.set_autostart(True, launcher_command())
 

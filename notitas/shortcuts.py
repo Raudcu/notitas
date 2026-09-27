@@ -4,7 +4,9 @@ Así funcionan igual en X11 y en Wayland, y quedan visibles/editables en
 Configuración → Teclado → Atajos personalizados.
 """
 
-from gi.repository import Gio
+import os
+
+from gi.repository import Gio, GLib
 
 from .store import MAX_NUMBER
 
@@ -18,6 +20,27 @@ DEFAULT_MODIFIERS = "<Control><Alt>"
 def _available():
     source = Gio.SettingsSchemaSource.get_default()
     return source is not None and source.lookup(MEDIA_KEYS, True) is not None
+
+
+def reads_session_config():
+    """¿Estamos leyendo la misma configuración de GNOME que la sesión?
+
+    GSettings lee de $XDG_CONFIG_HOME/dconf/user pero escribe siempre en la base
+    de la sesión. Si XDG_CONFIG_HOME apunta a otro lado (una prueba aislada, por
+    ejemplo), la lista de atajos se lee vacía y al escribirla se borrarían los
+    atajos personalizados de otros programas.
+    """
+    return os.path.exists(os.path.join(GLib.get_user_config_dir(), "dconf", "user"))
+
+
+def _check_safe_to_write():
+    if not _available():
+        raise RuntimeError("No se encontró la configuración de atajos de GNOME")
+    if not reads_session_config():
+        raise RuntimeError(
+            "No se tocan los atajos: esta instancia no lee la configuración de GNOME de la sesión "
+            f"(no existe {os.path.join(GLib.get_user_config_dir(), 'dconf', 'user')})"
+        )
 
 
 def installed():
@@ -36,9 +59,11 @@ def installed_command():
 
 
 def install(command, modifiers=DEFAULT_MODIFIERS):
-    """<mod>N → --quick N, <Shift><mod>N → --paste N (N = 1..9) y <mod>0 → selector."""
-    if not _available():
-        raise RuntimeError("No se encontró la configuración de atajos de GNOME")
+    """<mod>N → --quick N, <Shift><mod>N → --paste N (N = 1..9) y <mod>0 → selector.
+
+    Sólo agrega o reemplaza las entradas propias: los atajos de otros programas quedan igual.
+    """
+    _check_safe_to_write()
     uninstall()
     media = Gio.Settings.new(MEDIA_KEYS)
     paths = list(media.get_strv("custom-keybindings"))
@@ -61,6 +86,7 @@ def install(command, modifiers=DEFAULT_MODIFIERS):
 def uninstall():
     if not _available():
         return
+    _check_safe_to_write()
     media = Gio.Settings.new(MEDIA_KEYS)
     paths = list(media.get_strv("custom-keybindings"))
     for path in [p for p in paths if p.startswith(OUR_PREFIX)]:
