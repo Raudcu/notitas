@@ -7,7 +7,7 @@ from . import style, x11
 
 class QuickCapture(Gtk.Window):
     def __init__(self, app, store, note):
-        super().__init__(application=app, title=f"Notitas · {note.number}")
+        super().__init__(application=app, title=f"Notitas · {note.title or 'Sin título'}")
         self.store = store
         self.note_id = note.id
         self._had_focus = False
@@ -27,7 +27,8 @@ class QuickCapture(Gtk.Window):
         header = Gtk.Label(xalign=0, ellipsize=Pango.EllipsizeMode.END)
         header.add_css_class("header")
         header.set_margin_top(6)
-        header.set_label(f"{note.number} · {note.title or 'Sin título'}")
+        category = store.category(note.category_id)
+        header.set_label(f"{category.name if category else 'Sin categoría'} - {note.title or 'Sin título'}")
         box.append(header)
 
         self.view = Gtk.TextView(wrap_mode=Gtk.WrapMode.WORD_CHAR, vexpand=True)
