@@ -58,7 +58,7 @@ cuándo la tildaste), como un *blame*.
 
 - **Categorías** a la izquierda: se crean con **+** y se renombran o eliminan
   desde el menú **⋮** de arriba a la derecha.
-- **Notas**: *Nueva nota* crea una en la categoría abierta. Abierta, se le cambia
+- **Notas**: *Nueva nota* crea una al final de la categoría abierta. Abierta, se le cambia
   el título, el **color** (7), el **número** del atajo (1–9, o ninguno) y la
   categoría; el tacho la elimina. Los números son únicos: si le das uno que ya
   tenía otra nota, se lo saca a esa.

@@ -53,6 +53,12 @@ class StoreTest(unittest.TestCase):
         self.assertEqual(other.number, 1)
         self.assertIsNone(self.note.number)
 
+    def test_new_notes_go_last(self):
+        cat = self.store.categories[0].id
+        a = self.store.add_note(cat, "A")
+        b = self.store.add_note(cat, "B")
+        self.assertEqual([n.id for n in self.store.notes_in(cat)], [self.note.id, a.id, b.id])
+
     def test_move_note(self):
         cat = self.store.add_category("Otra")
         a = self.store.add_note(self.store.categories[0].id, "A")

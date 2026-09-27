@@ -337,7 +337,7 @@ class Store(GObject.Object):
         colors = list(PALETTE)
         color = colors[len(self.notes_in(cat_id)) % len(colors)]
         note = Note(_new_id(), cat_id, title=title, color=color, number=free, tasks=True)
-        self.notes.insert(0, note)
+        self.notes.append(note)  # orden de creación: la más nueva al final
         self._schedule_save()
         self.emit("changed")
         return note

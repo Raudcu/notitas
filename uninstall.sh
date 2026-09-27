@@ -10,4 +10,6 @@ APP_ID="io.github.notitas.Notitas"
 pkill -TERM -f "^/usr/bin/python3 $PREFIX/bin/notitas" 2>/dev/null || true
 rm -f "$HOME/.config/autostart/$APP_ID.desktop"
 make -C "$SRC" --no-print-directory uninstall PREFIX="$PREFIX" >/dev/null
+# Versiones anteriores de install.sh dejaban este índice; sin el ícono queda roto.
+rm -f "$PREFIX/share/icons/hicolor/icon-theme.cache"
 echo "Notitas desinstalada de $PREFIX. Tus notas y la configuración siguen ahí."

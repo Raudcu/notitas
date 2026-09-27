@@ -8,6 +8,7 @@ Terminal=false
 Categories=Utility;GTK;
 Keywords=notas;post-it;sticky;notes;tareas;
 StartupNotify=true
+StartupWMClass=io.github.notitas.Notitas
 Actions=buscar;preferencias;
 
 [Desktop Action buscar]

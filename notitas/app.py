@@ -67,6 +67,7 @@ class NotitasApp(Adw.Application):
 
     def do_startup(self):
         Adw.Application.do_startup(self)
+        Gtk.Window.set_default_icon_name(APP_ID)
         style.install()
         self.store = Store()
         self.store.connect("error", lambda _s, msg: self._notify_error(msg))
@@ -296,4 +297,7 @@ class NotitasApp(Adw.Application):
 
 
 def main(argv):
+    # Que la ventana se presente con el mismo nombre que su .desktop (WM_CLASS):
+    # así GNOME la asocia con su ícono en el Dash.
+    GLib.set_prgname(APP_ID)
     return NotitasApp().run(argv)

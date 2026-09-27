@@ -21,7 +21,8 @@ make -C "$SRC" --no-print-directory uninstall install PREFIX="$PREFIX" >/dev/nul
 # En ~/.local el Dash no siempre tiene ~/.local/bin en el PATH: usar la ruta completa.
 sed -i "s|^Exec=notitas|Exec=$PREFIX/bin/notitas|" "$PREFIX/share/applications/$APP_ID.desktop"
 python3 -m compileall -q "$PREFIX/lib/notitas"
-gtk-update-icon-cache -q -t "$PREFIX/share/icons/hicolor" 2>/dev/null || true
+# Sin índice de íconos a propósito: uno en ~/.local sin index.theme hace que GNOME
+# no encuentre el ícono. Los íconos se encuentran igual sin índice.
 update-desktop-database -q "$PREFIX/share/applications" 2>/dev/null || true
 
 if grep -q '"setup_done": true' "${XDG_CONFIG_HOME:-$HOME/.config}/notitas/config.json" 2>/dev/null; then
