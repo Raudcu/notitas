@@ -14,7 +14,7 @@ class NotesWindow(Adw.ApplicationWindow):
         super().__init__(application=app, title="Notitas")
         self.store = store
         self.current_cat = store.categories[0].id if store.categories else None
-        self.set_default_size(980, 640)
+        self.set_default_size(1000, 720)
         self.set_size_request(360, 320)
         # Cerrar la ventana no mata la app: sigue escuchando los atajos.
         self.set_hide_on_close(True)

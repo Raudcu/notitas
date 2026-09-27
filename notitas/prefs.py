@@ -19,9 +19,10 @@ def _pretty(path):
     return "~" + path[len(home):] if path.startswith(home) else path
 
 
-class PreferencesDialog(Adw.PreferencesDialog):
+class PreferencesDialog(Adw.Dialog):
     def __init__(self, app, welcome=False):
-        super().__init__(title="Bienvenida" if welcome else "Preferencias", search_enabled=False)
+        super().__init__(title="Bienvenida a Notitas" if welcome else "Preferencias",
+                         content_width=600, content_height=680)
         self.app = app
         self.store = app.store
         self.welcome = welcome
@@ -30,15 +31,6 @@ class PreferencesDialog(Adw.PreferencesDialog):
         self.backups_dir = config.backups_dir()
 
         page = Adw.PreferencesPage()
-        self.add(page)
-
-        if welcome:
-            intro = Adw.PreferencesGroup(
-                title="¡Hola! Configuremos Notitas",
-                description="Revisá estas opciones y tocá «Empezar». Después podés cambiarlas "
-                            "desde el menú → Preferencias.",
-            )
-            page.add(intro)
 
         # ---- notas ----
         notes = Adw.PreferencesGroup(
@@ -57,9 +49,8 @@ class PreferencesDialog(Adw.PreferencesDialog):
         # ---- copias ----
         backups = Adw.PreferencesGroup(
             title="Copias de seguridad",
-            description="Cada hora se guarda una copia del archivo (quedan las últimas 72). Conviene "
-                        "que esté fuera de la carpeta sincronizada: si algo se rompe del lado de "
-                        "Dropbox, la copia no se entera.",
+            description="Una por hora (quedan las últimas 72). Mejor fuera de la carpeta "
+                        "sincronizada, así no dependen de Dropbox.",
         )
         self.backups_row = Adw.ActionRow(title="Carpeta de las copias", subtitle=_pretty(self.backups_dir))
         self.backups_row.add_suffix(self._button("Cambiar…", lambda: self._pick(self._on_backups_dir)))
@@ -84,14 +75,19 @@ class PreferencesDialog(Adw.PreferencesDialog):
         system.add(self.autostart_row)
         page.add(system)
 
+        # El contenido se desplaza; la barra de arriba y el botón de abajo quedan siempre a la vista.
+        self.toasts = Adw.ToastOverlay(child=page)
+        view = Adw.ToolbarView(content=self.toasts)
+        view.add_top_bar(Adw.HeaderBar())
         if welcome:
-            start = Gtk.Button(label="Empezar", halign=Gtk.Align.CENTER)
+            start = Gtk.Button(label="Empezar", halign=Gtk.Align.CENTER, margin_top=10, margin_bottom=10,
+                               tooltip_text="Después se cambia desde el menú → Preferencias")
             start.add_css_class("suggested-action")
             start.add_css_class("pill")
             start.connect("clicked", self._on_start)
-            group = Adw.PreferencesGroup()
-            group.add(start)
-            page.add(group)
+            view.add_bottom_bar(start)
+            view.set_bottom_bar_style(Adw.ToolbarStyle.RAISED)
+        self.set_child(view)
 
     # ---------- helpers ----------
 
@@ -156,7 +152,7 @@ class PreferencesDialog(Adw.PreferencesDialog):
             msg = f"Notas guardadas en {_pretty(self.notes_dir)}"
         if os.path.exists(old) and not self.welcome:
             msg += f". El archivo anterior quedó en {_pretty(old)}"
-        self.add_toast(Adw.Toast(title=msg, timeout=6))
+        self.toasts.add_toast(Adw.Toast(title=msg, timeout=6))
 
     def _apply_shortcuts(self):
         from .app import launcher_command
