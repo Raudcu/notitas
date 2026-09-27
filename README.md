@@ -27,8 +27,8 @@ bienvenida para elegir dónde guardar las notas y activar los atajos.
 
 | Atajo | Qué hace |
 |---|---|
-| `Ctrl+Alt+1…9` | Abre un cuadradito del color de la nota con ese número. Escribís, **Enter** y se agrega al final (**Shift+Enter** = otra línea, **Esc** = cancelar). |
-| `Ctrl+Alt+Shift+1…9` | Agrega a esa nota **lo que tengas copiado**, sin abrir nada ni sacarte el foco. |
+| `Ctrl+Alt+1…9` | Abre un cuadradito del color de la nota con ese número. Escribís, **Enter** y se agrega al final (**Shift+Enter** = otra línea, **Esc** = cancelar; un clic afuera también la cierra si no escribiste nada). |
+| `Ctrl+Alt+Shift+1…9` | Agrega a esa nota **lo que tengas copiado**, sin abrir nada ni sacarte el foco. Un renglón entra como tarea (en notas de tareas); un bloque de varias líneas, tal cual. |
 | `Ctrl+Alt+0` | Busca cualquier nota, o crea una nueva escribiendo su título. Enter = agregar · Ctrl+Enter = post-it flotante · Alt+Enter = abrir. |
 
 <p>
@@ -40,7 +40,12 @@ bienvenida para elegir dónde guardar las notas y activar los atajos.
 
 Las líneas `- [ ] …` se ven como casillas. Al tildar una se tacha, y enseguida
 se va a **Archivadas**: una sección plegada al final de la nota, con lo último
-que archivaste primero. La nota queda limpia y no perdés el historial.
+que archivaste primero. La nota queda limpia y no perdés el historial. Si te
+equivocaste, destildala en Archivadas y vuelve a la lista.
+
+Una nota con el botón ☑ activado es una **nota de tareas**: todo lo que le
+llega por los atajos, pegado o desde el campo *Agregar tarea…* entra como
+`- [ ]`. Las notas nuevas vienen así; si lo desactivás, entra como texto común.
 
 ![Una tarea recién tildada, tachada, antes de irse a Archivadas](docs/screenshots/tick.png)
 
@@ -49,20 +54,46 @@ cuándo la tildaste), como un *blame*.
 
 ![Una nota abierta, con sus tareas, la hora de una línea y las archivadas desplegadas](docs/screenshots/note.png)
 
-### Y además
+### Organizar
 
+- **Categorías** a la izquierda: se crean con **+** y se renombran o eliminan
+  desde el menú **⋮** de arriba a la derecha.
+- **Notas**: *Nueva nota* crea una en la categoría abierta. Abierta, se le cambia
+  el título, el **color** (7), el **número** del atajo (1–9, o ninguno) y la
+  categoría; el tacho la elimina. Los números son únicos: si le das uno que ya
+  tenía otra nota, se lo saca a esa.
+- **Orden**: arrastrá una tarjeta para reordenarla, o soltala sobre una
+  categoría para moverla ahí.
+- **Clic derecho** en una tarjeta: abrirla o despegarla como post-it flotante.
+- **Buscar** (`Ctrl+F` o la lupa): en todas las notas y categorías, incluidas
+  las archivadas; resalta lo encontrado y muestra de qué categoría es cada nota.
 - **Formato**: `**negrita**`, `*cursiva*`, `~~tachado~~`, `` `código` ``, listas
-  con `-` o `1.` y links clickeables. Con el lápiz (o doble clic en una línea)
-  se edita como texto.
-- **Post-its flotantes**: cualquier nota se puede despegar a una ventanita
-  siempre encima y en todos los escritorios, con **opacidad**, **tamaño de
-  letra** y modo **solo título** (doble clic en la barra). Recuerdan su lugar.
-- **Categorías y orden**: arrastrá una tarjeta para reordenarla, o soltala sobre
-  una categoría para moverla.
-- **Buscar** (`Ctrl+F`): en todas las notas, incluidas las archivadas.
-- **Ícono en la barra superior** con accesos a todo lo anterior.
+  con `-` o `1.` (con sub-ítems) y links clickeables (`[texto](https://…)` o
+  URLs sueltas). Con el lápiz, o doble clic en una línea, se edita como texto.
+
+### Post-its flotantes
+
+Cualquier nota se despega a una ventanita **siempre encima**, visible en todos
+los escritorios y fuera del dock: con clic derecho en la tarjeta, el 📌 de la
+nota abierta, `Ctrl+Enter` en el buscador o desde el ícono de la barra. Se
+edita y se tildan tareas ahí mismo. Desde su menú **⋮** se ajusta la
+**opacidad**, el **tamaño de letra**, se **achica a solo el título** (también
+con doble clic en la barra) o se abre en la ventana principal. Recuerdan
+posición, tamaño y ajustes, y vuelven a aparecer al iniciar sesión.
+
+### Siempre a mano
+
+- **Ícono en la barra superior**: abrir Notitas, buscar, *Agregar a…* y
+  *Pegar lo copiado en…* cualquier nota con número, mostrar u ocultar cada
+  post-it flotante, y salir.
+- **Clic derecho en el ícono del Dash**: *Buscar nota* y *Preferencias*.
 - Cerrar la ventana no cierra la app: queda en segundo plano atendiendo los
   atajos. Para salir del todo: `Ctrl+Q` o *Salir* en el ícono de la barra.
+- **Preferencias** (menú ☰): carpeta de las notas, carpeta de las copias de
+  seguridad, atajos y arranque automático al iniciar sesión. Si elegís una
+  carpeta que ya tiene un `notitas.md` (por ejemplo, la de Dropbox en otra
+  computadora), usa ese. Los atajos también se pueden cambiar en
+  Configuración → Teclado → Atajos personalizados.
 
 ## Dónde quedan las notas
 
