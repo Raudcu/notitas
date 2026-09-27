@@ -1,0 +1,8 @@
+notitas (0.3.0) noble; urgency=medium
+
+  * Tareas tildables que se archivan solas, formato Markdown y links.
+  * Ctrl+Alt+Shift+N agrega lo copiado a la nota N.
+  * Buscador, arrastrar para ordenar y post-its flotantes configurables.
+  * Bienvenida y preferencias dentro de la app; primer paquete .deb.
+
+ -- Lucas Pili <lucas.pili@zoomagri.com>  Sat, 26 Sep 2026 23:15:41 -0300

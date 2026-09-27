@@ -1,0 +1,19 @@
+[Desktop Entry]
+Type=Application
+Name=Notitas
+Comment=Notas tipo post-it con captura rápida por atajo
+Exec=notitas
+Icon=io.github.notitas.Notitas
+Terminal=false
+Categories=Utility;GTK;
+Keywords=notas;post-it;sticky;notes;tareas;
+StartupNotify=true
+Actions=buscar;preferencias;
+
+[Desktop Action buscar]
+Name=Buscar nota
+Exec=notitas --pick
+
+[Desktop Action preferencias]
+Name=Preferencias
+Exec=notitas --preferences

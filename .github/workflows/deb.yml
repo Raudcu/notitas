@@ -1,0 +1,66 @@
+# Tests + paquete .deb en cada push/PR. Al pushear un tag vX.Y.Z, además
+# publica un Release de GitHub con el .deb adjunto.
+#
+#   1. Subir VERSION en notitas/__init__.py y agregar la entrada en debian/changelog
+#      (dch -v X.Y.Z, o a mano con el mismo formato).
+#   2. git tag vX.Y.Z && git push origin vX.Y.Z
+name: Paquete .deb
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write  # para crear el Release
+
+jobs:
+  deb:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar herramientas
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            debhelper dpkg-dev lintian python3-gi gir1.2-pango-1.0
+
+      - name: Chequear que las versiones coincidan
+        run: |
+          py=$(python3 -c "import notitas; print(notitas.VERSION)")
+          deb=$(dpkg-parsechangelog -S Version)
+          echo "notitas/__init__.py: $py · debian/changelog: $deb"
+          test "$py" = "$deb" || { echo "::error::Las versiones no coinciden"; exit 1; }
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            test "${GITHUB_REF_NAME#v}" = "$py" \
+              || { echo "::error::El tag $GITHUB_REF_NAME no coincide con la versión $py"; exit 1; }
+          fi
+
+      - name: Tests
+        run: make test
+
+      - name: Construir el .deb
+        run: make deb
+
+      - name: Revisar el paquete (lintian, informativo)
+        run: lintian --no-tag-display-limit dist/*.deb || true
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: notitas-deb
+          path: dist/*.deb
+
+      - name: Publicar Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          notes=$(dpkg-parsechangelog -S Changes | sed '1,3d')
+          gh release create "$GITHUB_REF_NAME" dist/*.deb \
+            --title "Notitas $GITHUB_REF_NAME" \
+            --notes "$notes
+
+          **Instalar:** bajá el .deb y hacé doble clic, o \`sudo apt install ./notitas_*_all.deb\`."

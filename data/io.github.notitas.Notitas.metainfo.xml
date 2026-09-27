@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.notitas.Notitas</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  <name>Notitas</name>
+  <summary>Notas tipo post-it con captura rápida por atajo</summary>
+  <description>
+    <p>Notas de colores organizadas por categoría, con tareas tildables que se archivan solas.
+    Desde cualquier programa, Ctrl+Alt+N abre un cuadradito para agregar texto a la nota N,
+    y Ctrl+Alt+Shift+N le agrega lo que tengas copiado.</p>
+    <p>Todo se guarda en un único archivo Markdown legible, en la carpeta que elijas.</p>
+  </description>
+  <url type="homepage">https://github.com/Raudcu/notitas</url>
+  <url type="bugtracker">https://github.com/Raudcu/notitas/issues</url>
+  <launchable type="desktop-id">io.github.notitas.Notitas.desktop</launchable>
+  <developer id="io.github.notitas">
+    <name>Lucas Pili</name>
+  </developer>
+  <content_rating type="oars-1.1"/>
+  <releases>
+    <release version="0.3.0" date="2026-09-26"/>
+  </releases>
+</component>

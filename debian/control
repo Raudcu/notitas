@@ -1,0 +1,30 @@
+Source: notitas
+Section: utils
+Priority: optional
+Maintainer: Lucas Pili <lucas.pili@zoomagri.com>
+Build-Depends: debhelper-compat (= 13),
+               python3,
+               python3-gi,
+               gir1.2-pango-1.0
+Standards-Version: 4.6.2
+Homepage: https://github.com/Raudcu/notitas
+Vcs-Browser: https://github.com/Raudcu/notitas
+Vcs-Git: https://github.com/Raudcu/notitas.git
+Rules-Requires-Root: no
+
+Package: notitas
+Architecture: all
+Depends: ${misc:Depends},
+         python3 (>= 3.10),
+         python3-gi,
+         gir1.2-gtk-4.0,
+         gir1.2-adw-1 (>= 1.5),
+         libx11-6
+Recommends: gnome-shell-extension-appindicator
+Description: notas tipo post-it con captura rápida por atajo
+ Notas de colores organizadas por categoría, con tareas tildables que se
+ archivan solas. Desde cualquier programa, Ctrl+Alt+N abre un cuadradito para
+ agregar texto a la nota N y Ctrl+Alt+Shift+N le agrega lo copiado.
+ .
+ Todo se guarda en un único archivo Markdown legible, en la carpeta que elijas
+ (por ejemplo, una carpeta de Dropbox).

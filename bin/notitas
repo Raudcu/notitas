@@ -1,0 +1,15 @@
+#!/usr/bin/python3
+# Usa el python3 del sistema a propósito: python3-gi / GTK4 / libadwaita vienen
+# de apt, igual que quedaría como dependencia de un .deb.
+import os
+import sys
+
+here = os.path.dirname(os.path.realpath(__file__))
+for candidate in (here, os.path.join(here, "..")):
+    if os.path.isdir(os.path.join(candidate, "notitas")):
+        sys.path.insert(0, os.path.abspath(candidate))
+        break
+
+from notitas.__main__ import main  # noqa: E402
+
+sys.exit(main())
