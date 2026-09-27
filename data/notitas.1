@@ -1,0 +1,47 @@
+.TH NOTITAS 1 "2026" "Notitas" "Comandos de usuario"
+.SH NOMBRE
+notitas \- notas tipo post-it con captura rápida por atajo
+.SH SINOPSIS
+.B notitas
+[\fB\-\-quick\fR \fIN\fR | \fB\-\-paste\fR \fIN\fR | \fB\-\-pick\fR | \fB\-\-preferences\fR | \fB\-\-background\fR]
+.SH DESCRIPCIÓN
+Notitas guarda notas de colores, organizadas por categoría, en un único
+archivo Markdown (\fInotitas.md\fR) en la carpeta que elijas. Las tareas
+(\fB- [ ]\fR) se tildan y pasan a una sección de archivadas.
+.PP
+Queda corriendo en segundo plano para atender los atajos globales, que se
+activan desde la bienvenida o las preferencias:
+\fBCtrl+Alt+1…9\fR agrega texto a esa nota,
+\fBCtrl+Alt+Shift+1…9\fR le agrega lo copiado y
+\fBCtrl+Alt+0\fR busca cualquier nota.
+.SH OPCIONES
+.TP
+.BI \-\-quick " N"
+Abre la ventanita de captura rápida para la nota número \fIN\fR.
+.TP
+.BI \-\-paste " N"
+Agrega el texto del portapapeles al final de la nota número \fIN\fR.
+.TP
+.B \-\-pick
+Abre el buscador de notas.
+.TP
+.B \-\-preferences
+Abre las preferencias.
+.TP
+.B \-\-background
+Arranca sin mostrar ninguna ventana.
+.TP
+.BI \-\-notes\-dir " CARPETA"
+Cambia la carpeta donde se guardan las notas y sale.
+.TP
+.BR \-\-install\-shortcuts ", " \-\-uninstall\-shortcuts
+Registra o quita los atajos de GNOME y sale.
+.SH ARCHIVOS
+.TP
+.I ~/.config/notitas/config.json
+Carpeta de las notas y de las copias de seguridad.
+.TP
+.I ~/.local/share/notitas/backups/
+Copias de seguridad por hora (por defecto).
+.SH VER TAMBIÉN
+https://github.com/Raudcu/notitas

@@ -21,13 +21,15 @@ install:
 	install -Dm 644 data/$(APP_ID).desktop $(SHARE)/applications/$(APP_ID).desktop
 	install -Dm 644 data/$(APP_ID).svg $(SHARE)/icons/hicolor/scalable/apps/$(APP_ID).svg
 	install -Dm 644 data/$(APP_ID).metainfo.xml $(SHARE)/metainfo/$(APP_ID).metainfo.xml
+	install -Dm 644 data/notitas.1 $(SHARE)/man/man1/notitas.1
 
 uninstall:
 	rm -rf $(LIB)
 	rm -f $(DESTDIR)$(PREFIX)/bin/notitas \
 	      $(SHARE)/applications/$(APP_ID).desktop \
 	      $(SHARE)/icons/hicolor/scalable/apps/$(APP_ID).svg \
-	      $(SHARE)/metainfo/$(APP_ID).metainfo.xml
+	      $(SHARE)/metainfo/$(APP_ID).metainfo.xml \
+	      $(SHARE)/man/man1/notitas.1
 
 test:
 	python3 -m unittest discover -s tests -t . -v
