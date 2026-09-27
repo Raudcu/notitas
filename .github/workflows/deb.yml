@@ -20,13 +20,13 @@ jobs:
   deb:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Instalar herramientas
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
-            debhelper dpkg-dev lintian python3-gi gir1.2-pango-1.0
+            build-essential debhelper dpkg-dev lintian python3-gi gir1.2-pango-1.0
 
       - name: Chequear que las versiones coincidan
         run: |
