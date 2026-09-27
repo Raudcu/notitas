@@ -1,7 +1,7 @@
-notitas (0.3.2) noble; urgency=medium
+notitas (0.3.3) noble; urgency=medium
 
-  * Las notas nuevas se agregan al final (orden de creación).
-  * El ícono de Notitas se ve en el Dash mientras está abierta.
+  * Las categorías se reordenan arrastrándolas en la barra lateral.
+  * Una nota que se mueve a otra categoría queda al final.
 
- -- Lucas Pili <lucas.pili@zoomagri.com>  Sun, 27 Sep 2026 00:41:22 -0300
+ -- Lucas Pili <lucas.pili@zoomagri.com>  Sun, 27 Sep 2026 00:47:33 -0300
 
