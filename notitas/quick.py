@@ -97,7 +97,7 @@ class QuickMessage(Gtk.Window):
             box.append(sub)
         self.set_child(box)
         self.connect("realize", self._on_realize)
-        GLib.timeout_add(1600, self._timeout)
+        GLib.timeout_add(2500, self._timeout)
 
     def _on_realize(self, _win):
         # Es sólo un aviso: no tiene que sacarle el foco a lo que estés usando.
