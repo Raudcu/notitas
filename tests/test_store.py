@@ -40,6 +40,12 @@ class StoreTest(unittest.TestCase):
         again = self.reload().note(self.note.id)
         self.assertEqual([t for t, _ts, _d in again.archived], ["- [x] b"])
 
+    def test_delete_archived(self):
+        self.note.archived = [["- [x] a", None, None], ["- [x] b", None, None]]
+        self.assertFalse(self.store.delete_archived(self.note.id, 0, "- [x] b"))
+        self.assertTrue(self.store.delete_archived(self.note.id, 1, "- [x] b"))
+        self.assertEqual([t for t, _ts, _d in self.reload().note(self.note.id).archived], ["- [x] a"])
+
     def test_editing_keeps_times_of_unchanged_lines(self):
         self.note.lines = [["uno", "2026-01-01 10:00"], ["dos", "2026-01-01 11:00"]]
         self.store.update_note(self.note.id, content="uno\ndos cambiado\ntres")

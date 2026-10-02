@@ -70,6 +70,8 @@ window.floating .floating-header > menubutton > button { color: #2b2b2b; min-wid
 .note-view check { margin-top: 1px; }
 .note-view check:checked { background: alpha(#2b2b2b, 0.45); }
 label.row-stamp { background: alpha(white, 0.75); }
+button.row-trash { color: alpha(#2b2b2b, 0.45); min-width: 24px; min-height: 24px; padding: 0; }
+button.row-trash:hover { color: #2b2b2b; }
 entry.add-line {
   background: alpha(black, 0.05);
   color: #2b2b2b;

@@ -444,6 +444,16 @@ class Store(GObject.Object):
         self.emit("note-changed", note_id)
         return True
 
+    def delete_archived(self, note_id, index, expected_text):
+        """Borra para siempre una tarea archivada."""
+        note = self.note(note_id)
+        if not note or index >= len(note.archived) or note.archived[index][0] != expected_text:
+            return False
+        note.archived.pop(index)
+        self._schedule_save()
+        self.emit("note-changed", note_id)
+        return True
+
     def set_line(self, note_id, index, text):
         note = self.note(note_id)
         if note and index < len(note.lines) and note.lines[index][0] != text:

@@ -124,6 +124,13 @@ class NoteView(Gtk.Stack):
         if line.checked or archived or pending:
             label.add_css_class("done")
         box.append(label)
+        if archived:
+            trash = Gtk.Button(icon_name="user-trash-symbolic", tooltip_text="Borrar",
+                               valign=Gtk.Align.START)
+            trash.add_css_class("flat")
+            trash.add_css_class("row-trash")
+            trash.connect("clicked", lambda _b: self.store.delete_archived(self.note_id, archived_index, raw))
+            box.append(trash)
 
         # Hora al pasar el mouse, encima del final de la fila (no empuja el texto).
         overlay = Gtk.Overlay(child=box)
@@ -134,6 +141,8 @@ class NoteView(Gtk.Stack):
                               visible=False, can_target=False)
             stamp.add_css_class("blame")
             stamp.add_css_class("row-stamp")
+            if archived:
+                stamp.set_margin_end(30)  # que no tape el tacho
             overlay.add_overlay(stamp)
             motion = Gtk.EventControllerMotion()
             motion.connect("enter", lambda *_: stamp.set_visible(True))
