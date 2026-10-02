@@ -231,10 +231,12 @@ class NotesWindow(Adw.ApplicationWindow):
 
     def _new_note(self):
         note = self.store.add_note(self.current_cat)
-        self.open_editor(note.id)
+        self.open_editor(note.id).select_title()
 
     def open_editor(self, note_id):
-        NoteEditor(self.store, note_id).present(self)
+        editor = NoteEditor(self.store, note_id)
+        editor.present(self)
+        return editor
 
     def show_note(self, note_id):
         """Ir a la categoría de la nota y abrirla."""
@@ -495,6 +497,32 @@ class NoteEditor(Adw.Dialog):
 
         handler = store.connect("changed", self._on_structure_changed)
         self.connect("closed", lambda *_: store.disconnect(handler))
+
+    def present(self, parent):
+        super().present(parent)
+        # Adw.Dialog no se cierra al hacer clic afuera: lo escuchamos en la ventana.
+        window = parent.get_root()
+        outside = Gtk.GestureClick(propagation_phase=Gtk.PropagationPhase.CAPTURE)
+        outside.connect("pressed", self._on_window_pressed, window)
+        window.add_controller(outside)
+        self.connect("closed", lambda *_: window.remove_controller(outside))
+
+    def _on_window_pressed(self, gesture, _n, x, y, window):
+        if window.get_visible_dialog() is not self:  # p. ej. está abierto «¿Eliminar?»
+            return
+        ok, bounds = self.get_child().compute_bounds(window)
+        if ok and not (bounds.get_x() <= x <= bounds.get_x() + bounds.get_width()
+                       and bounds.get_y() <= y <= bounds.get_y() + bounds.get_height()):
+            gesture.set_state(Gtk.EventSequenceState.CLAIMED)
+            self.close()
+
+    def select_title(self):
+        """Foco en el título con todo seleccionado: escribir reemplaza «Nota nueva»."""
+        def focus():
+            self.title.grab_focus()
+            self.title.select_region(0, -1)
+            return False
+        GLib.idle_add(focus)
 
     def _set_color(self, color):
         self._apply_color(color)
