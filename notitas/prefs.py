@@ -11,7 +11,7 @@ from gi.repository import Adw, Gio, GLib, Gtk
 
 from . import config, shortcuts
 
-SHORTCUTS_HELP = "Ctrl+Alt+1…9 agregar · Ctrl+Alt+Shift+1…9 pegar lo copiado · Ctrl+Alt+0 buscar"
+SHORTCUTS_HELP = "Ctrl+Alt+1…9 agregar · Ctrl+Alt+Shift+1…9 pegar lo seleccionado · Ctrl+Alt+0 buscar"
 
 
 def _pretty(path):

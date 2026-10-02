@@ -28,7 +28,7 @@ bienvenida para elegir dónde guardar las notas y activar los atajos.
 | Atajo | Qué hace |
 |---|---|
 | `Ctrl+Alt+1…9` | Abre un cuadradito del color de la nota con ese número. Escribís, **Enter** y se agrega al final (**Shift+Enter** = otra línea, **Esc** = cancelar; un clic afuera también la cierra si no escribiste nada). |
-| `Ctrl+Alt+Shift+1…9` | Agrega a esa nota **lo que tengas copiado**, sin abrir nada ni sacarte el foco. Un renglón entra como tarea (en notas de tareas); un bloque de varias líneas, tal cual. |
+| `Ctrl+Alt+Shift+1…9` | Agrega a esa nota **lo que tengas seleccionado** (si no hay nada, lo copiado), sin abrir nada ni sacarte el foco. Un renglón entra como tarea (en notas de tareas); un bloque de varias líneas, tal cual. |
 | `Ctrl+Alt+0` | Busca cualquier nota, o crea una nueva escribiendo su título. Enter = agregar · Ctrl+Enter = post-it flotante · Alt+Enter = abrir. |
 
 <p>
@@ -85,7 +85,7 @@ posición, tamaño y ajustes, y vuelven a aparecer al iniciar sesión.
 ### Siempre a mano
 
 - **Ícono en la barra superior**: abrir Notitas, buscar, *Agregar a…* y
-  *Pegar lo copiado en…* cualquier nota con número, mostrar u ocultar cada
+  *Pegar lo seleccionado en…* cualquier nota con número, mostrar u ocultar cada
   post-it flotante, y salir.
 - **Clic derecho en el ícono del Dash**: *Buscar nota* y *Preferencias*.
 - Cerrar la ventana no cierra la app: queda en segundo plano atendiendo los
@@ -139,7 +139,7 @@ reapuntan solos.
 ```bash
 bin/notitas                    # correr desde el código
 bin/notitas --quick 1          # captura rápida a la nota 1
-bin/notitas --paste 1          # agregar lo copiado a la nota 1
+bin/notitas --paste 1          # agregar lo seleccionado a la nota 1
 bin/notitas --pick             # selector
 bin/notitas --preferences      # preferencias
 bin/notitas --background       # arrancar sin ventana
@@ -176,7 +176,7 @@ sin dependencias fuera de apt. Los atajos son *atajos personalizados* de GNOME
 "Siempre encima", la posición de los post-its, el foco de la ventanita rápida y
 que el aviso de "Pegado" no robe el foco usan X11. En Wayland todo lo demás
 funciona, pero eso queda en manos de GNOME (y leer el portapapeles sin tener el
-foco puede no estar permitido).
+foco puede no estar permitido; lo seleccionado, tampoco).
 
 | Archivo | Qué hace |
 |---|---|

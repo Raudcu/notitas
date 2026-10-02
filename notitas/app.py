@@ -32,7 +32,7 @@ class NotitasApp(Adw.Application):
         self._quitting = False
         opts = [
             ("quick", GLib.OptionArg.INT, "Captura rápida para la nota N", "N"),
-            ("paste", GLib.OptionArg.INT, "Agregar lo copiado a la nota N", "N"),
+            ("paste", GLib.OptionArg.INT, "Agregar lo seleccionado (o lo copiado) a la nota N", "N"),
             ("pick", GLib.OptionArg.NONE, "Abrir el selector de notas", None),
             ("preferences", GLib.OptionArg.NONE, "Abrir las preferencias", None),
             ("background", GLib.OptionArg.NONE, "Arrancar sin ventana (para el inicio de sesión)", None),
@@ -174,20 +174,28 @@ class NotitasApp(Adw.Application):
         QuickCapture(self, self.store, self.store.note(note_id)).show_focused()
 
     def paste_clipboard(self, number):
-        """Agrega lo copiado a la nota N sin abrir nada; muestra un aviso breve."""
+        """Agrega lo seleccionado (o, si no hay, lo copiado) a la nota N sin abrir nada."""
         note = self.store.note_by_number(number)
         if not note:
             QuickMessage(self, f"No hay ninguna nota con el número {number}").present()
             return
-        clipboard = Gdk.Display.get_default().get_clipboard()
+        display = Gdk.Display.get_default()
+        # Primero la selección (lo que pega el clic del medio); si no hay, el portapapeles.
+        sources = [display.get_primary_clipboard(), display.get_clipboard()]
+
+        def read_next():
+            sources.pop(0).read_text_async(None, on_text)
 
         def on_text(cb, result):
             try:
                 text = (cb.read_text_finish(result) or "").strip()
             except GLib.Error:
                 text = ""
+            if not text and sources:
+                read_next()
+                return
             if not text:
-                QuickMessage(self, "No hay texto copiado", note.color).present()
+                QuickMessage(self, "No hay texto seleccionado ni copiado", note.color).present()
                 return
             # Un renglón entra como tarea; un bloque de varias líneas, tal cual.
             self.store.append(note.id, text, as_tasks=None if "\n" not in text else False)
@@ -196,7 +204,7 @@ class NotitasApp(Adw.Application):
             # Aviso sin robar el foco: seguís trabajando donde estabas.
             QuickMessage(self, f"Pegado en «{note.title or 'Sin título'}»", note.color, first).present()
 
-        clipboard.read_text_async(None, on_text)
+        read_next()
 
     def show_picker(self):
         for win in self.get_windows():
@@ -272,7 +280,7 @@ class NotitasApp(Adw.Application):
             tray.item("Buscar nota…  (Ctrl+Alt+0)", self.show_picker),
             tray.separator(),
             tray.item("Agregar a…", children=add_items or [tray.item("(ninguna nota tiene número)")]),
-            tray.item("Pegar lo copiado en…", children=paste_items or [tray.item("(ninguna nota tiene número)")]),
+            tray.item("Pegar lo seleccionado en…", children=paste_items or [tray.item("(ninguna nota tiene número)")]),
             tray.item("Post-its flotantes", children=float_items or [tray.item("(no hay notas)")]),
             tray.separator(),
             tray.item("Salir", self._on_quit),
