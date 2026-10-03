@@ -3,7 +3,7 @@
 from gi.repository import Adw, Gdk, Gio, GLib, GObject, Gtk, Pango
 
 from . import markup, style
-from .noteview import NoteView
+from .noteview import LINE_DRAG, NoteView
 from .store import MAX_NUMBER, PALETTE
 
 CARD_SIZE = 190
@@ -191,6 +191,8 @@ class NotesWindow(Adw.ApplicationWindow):
 
     def _on_category_drag_motion(self, target, _x, y, row):
         value = target.get_value()
+        if isinstance(value, str) and value.startswith(LINE_DRAG):
+            return 0  # una línea de una nota no se suelta en una categoría
         if isinstance(value, str) and value.startswith(CATEGORY_DRAG):
             self._mark_category_drop(row, "below" if y > row.get_height() / 2 else "above")
         return Gdk.DragAction.MOVE
@@ -203,6 +205,8 @@ class NotesWindow(Adw.ApplicationWindow):
 
     def _on_drop_on_category(self, _target, value, _x, y, cat_id, row):
         self._mark_category_drop(row, None)
+        if value.startswith(LINE_DRAG):
+            return False
         # Se difiere: mover reconstruye la lista mientras termina el arrastre.
         if value.startswith(CATEGORY_DRAG):
             after = y > row.get_height() / 2
@@ -361,8 +365,8 @@ class NoteCard(Gtk.FlowBoxChild):
 
     def _on_drag_motion(self, target, x, _y):
         value = target.get_value()
-        if isinstance(value, str) and value.startswith(CATEGORY_DRAG):
-            return 0  # una categoría no se suelta sobre una tarjeta
+        if isinstance(value, str) and value.startswith((CATEGORY_DRAG, LINE_DRAG)):
+            return 0  # una categoría o una línea no se sueltan sobre una tarjeta
         self._mark_drop("after" if x > self.get_width() / 2 else "before")
         return Gdk.DragAction.MOVE
 
@@ -374,7 +378,7 @@ class NoteCard(Gtk.FlowBoxChild):
 
     def _on_drop(self, _target, note_id, x, _y):
         self._mark_drop(None)
-        if note_id.startswith(CATEGORY_DRAG):
+        if note_id.startswith((CATEGORY_DRAG, LINE_DRAG)):
             return False
         after = x > self.get_width() / 2
         GLib.idle_add(lambda: self.window.store.move_note(note_id, self.note_id, after=after) and False)

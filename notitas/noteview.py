@@ -4,13 +4,14 @@ Al tildar una tarea se tacha, y después de un momento se desliza hacia
 "Archivadas", una sección plegada al final donde lo último archivado queda primero.
 """
 
-from gi.repository import GLib, Gtk, Pango
+from gi.repository import Gdk, GLib, Gtk, Pango
 
 from . import markup
 from .blame import BlameHover, format_ts
 
 STRIKE_DELAY_MS = 900  # cuánto se ve tachado antes de irse
 SLIDE_MS = 250
+LINE_DRAG = "linea:"  # + id de la nota; lo que se arrastra al reordenar líneas
 
 
 class NoteView(Gtk.Stack):
@@ -21,6 +22,7 @@ class NoteView(Gtk.Stack):
         self._pending = {}  # texto de la tarea tildada -> id del timeout
         self._syncing = False
         self._archive_open = False
+        self._dragging = None  # (índice, texto) de la línea que se está arrastrando
         note = store.note(note_id)
 
         # ---- vista con formato ----
@@ -162,7 +164,57 @@ class NoteView(Gtk.Stack):
             dbl = Gtk.GestureClick()
             dbl.connect("pressed", lambda _g, n, *_: n == 2 and self.set_editing(True, line=index))
             label.add_controller(dbl)
+            self._setup_line_dnd(overlay, index, raw)
         return revealer
+
+    # ---------- reordenar arrastrando ----------
+
+    def _setup_line_dnd(self, row, index, raw):
+        source = Gtk.DragSource(actions=Gdk.DragAction.MOVE)
+        source.connect("prepare", self._on_line_drag_prepare, index, raw)
+        source.connect("drag-begin", lambda src, _d: (src.set_icon(Gtk.WidgetPaintable(widget=row), 20, 10),
+                                                      row.add_css_class("dragging")))
+        source.connect("drag-end", lambda *_: (row.remove_css_class("dragging"),
+                                               setattr(self, "_dragging", None)))
+        row.add_controller(source)
+
+        target = Gtk.DropTarget.new(str, Gdk.DragAction.MOVE)
+        target.set_preload(True)
+        target.connect("motion", self._on_line_drag_motion, row)
+        target.connect("leave", lambda *_: self._mark_line_drop(row, None))
+        target.connect("drop", self._on_line_drop, row, index)
+        row.add_controller(target)
+
+    def _on_line_drag_prepare(self, _source, _x, _y, index, raw):
+        if raw in self._pending:  # ya tildada, a punto de irse
+            return None
+        self._dragging = (index, raw)
+        return Gdk.ContentProvider.new_for_value(LINE_DRAG + self.note_id)
+
+    def _is_own_line(self, value):
+        return value == LINE_DRAG + self.note_id and self._dragging is not None
+
+    def _on_line_drag_motion(self, target, _x, y, row):
+        if not self._is_own_line(target.get_value()):
+            return 0
+        self._mark_line_drop(row, "below" if y > row.get_height() / 2 else "above")
+        return Gdk.DragAction.MOVE
+
+    def _mark_line_drop(self, row, side):
+        for s in ("above", "below"):
+            row.remove_css_class(f"drop-{s}")
+        if side:
+            row.add_css_class(f"drop-{side}")
+
+    def _on_line_drop(self, _target, value, _x, y, row, index):
+        self._mark_line_drop(row, None)
+        if not self._is_own_line(value):
+            return False
+        dragged, raw = self._dragging
+        after = y > row.get_height() / 2
+        # Se difiere: mover vuelve a dibujar las filas mientras termina el arrastre.
+        GLib.idle_add(lambda: self.store.move_line(self.note_id, dragged, raw, index, after=after) and False)
+        return True
 
     # ---------- tareas ----------
 

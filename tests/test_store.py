@@ -46,6 +46,29 @@ class StoreTest(unittest.TestCase):
         self.assertTrue(self.store.delete_archived(self.note.id, 1, "- [x] b"))
         self.assertEqual([t for t, _ts, _d in self.reload().note(self.note.id).archived], ["- [x] a"])
 
+    def test_move_line(self):
+        self.note.lines = [["- [ ] a", "2026-01-01 10:00"], ["- [ ] b", None], ["- [ ] c", None]]
+        self.assertTrue(self.store.move_line(self.note.id, 0, "- [ ] a", 2, after=True))
+        self.assertEqual([t for t, _ts in self.note.lines], ["- [ ] b", "- [ ] c", "- [ ] a"])
+        self.assertEqual(self.note.lines[2][1], "2026-01-01 10:00")  # conserva la hora
+        self.assertTrue(self.store.move_line(self.note.id, 2, "- [ ] a", 0))
+        self.assertEqual([t for t, _ts in self.note.lines], ["- [ ] a", "- [ ] b", "- [ ] c"])
+        self.assertTrue(self.store.move_line(self.note.id, 2, "- [ ] c", 1))
+        self.assertEqual([t for t, _ts in self.note.lines], ["- [ ] a", "- [ ] c", "- [ ] b"])
+        self.assertFalse(self.store.move_line(self.note.id, 0, "- [ ] otra", 1))
+        again = self.reload().note(self.note.id)
+        self.assertEqual([t for t, _ts in again.lines], ["- [ ] a", "- [ ] c", "- [ ] b"])
+
+    def test_move_line_carries_sub_items(self):
+        texts = ["- [ ] a", "  - [ ] a1", "  - [ ] a2", "- [ ] b", "  - [ ] b1", "- [ ] c"]
+        self.note.lines = [[t, None] for t in texts]
+        self.assertTrue(self.store.move_line(self.note.id, 0, "- [ ] a", 3, after=True))  # después de b y b1
+        self.assertEqual([t for t, _ts in self.note.lines],
+                         ["- [ ] b", "  - [ ] b1", "- [ ] a", "  - [ ] a1", "  - [ ] a2", "- [ ] c"])
+        self.assertFalse(self.store.move_line(self.note.id, 2, "- [ ] a", 3))  # sobre un sub-ítem propio
+        self.assertTrue(self.store.move_line(self.note.id, 5, "- [ ] c", 0))
+        self.assertEqual([t for t, _ts in self.note.lines][:3], ["- [ ] c", "- [ ] b", "  - [ ] b1"])
+
     def test_editing_keeps_times_of_unchanged_lines(self):
         self.note.lines = [["uno", "2026-01-01 10:00"], ["dos", "2026-01-01 11:00"]]
         self.store.update_note(self.note.id, content="uno\ndos cambiado\ntres")

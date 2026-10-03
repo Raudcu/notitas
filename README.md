@@ -43,6 +43,9 @@ se va a **Archivadas**: una sección plegada al final de la nota, con lo último
 que archivaste primero. La nota queda limpia y no perdés el historial. Si te
 equivocaste, destildala en Archivadas y vuelve a la lista.
 
+Para cambiar el orden, arrastrá una línea y soltala encima o debajo de otra;
+sus sub-ítems (las líneas con más sangría) la acompañan.
+
 Una nota con el botón ☑ activado es una **nota de tareas**: todo lo que le
 llega por los atajos, pegado o desde el campo *Agregar tarea…* entra como
 `- [ ]`. Las notas nuevas vienen así; si lo desactivás, entra como texto común.

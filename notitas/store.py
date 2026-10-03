@@ -96,6 +96,18 @@ def _relabel(old_lines, new_text):
     return result
 
 
+def _block_end(lines, index):
+    """Índice donde terminan la línea index y sus sub-ítems (las de más sangría)."""
+    indent = markup.classify(lines[index][0]).indent
+    end = index + 1
+    while end < len(lines):
+        line = markup.classify(lines[end][0])
+        if line.kind == "blank" or line.indent <= indent:
+            break
+        end += 1
+    return end
+
+
 class Store(GObject.Object):
     __gsignals__ = {
         # Cambió la estructura: categorías, notas agregadas/borradas, números.
@@ -450,6 +462,28 @@ class Store(GObject.Object):
         if not note or index >= len(note.archived) or note.archived[index][0] != expected_text:
             return False
         note.archived.pop(index)
+        self._schedule_save()
+        self.emit("note-changed", note_id)
+        return True
+
+    def move_line(self, note_id, index, expected_text, target, after=False):
+        """Reordena: pone la línea index (con sus sub-ítems) antes o después de target.
+
+        "Después" es después de target y de sus sub-ítems, para no meterse en medio.
+        """
+        note = self.note(note_id)
+        if (not note or not 0 <= target < len(note.lines)
+                or index >= len(note.lines) or note.lines[index][0] != expected_text):
+            return False
+        end = _block_end(note.lines, index)
+        if index <= target < end:  # sobre sí misma o sobre un sub-ítem suyo
+            return False
+        dest = _block_end(note.lines, target) if after else target
+        block = note.lines[index:end]
+        del note.lines[index:end]
+        if dest > index:
+            dest -= len(block)
+        note.lines[dest:dest] = block
         self._schedule_save()
         self.emit("note-changed", note_id)
         return True
