@@ -1,6 +1,6 @@
-notitas (0.3.7) noble; urgency=medium
+notitas (0.3.8) noble; urgency=medium
 
-  * Las tareas archivadas tienen un tacho para borrarlas.
+  * Las líneas de una nota se reordenan arrastrándolas, con sus sub-ítems.
 
- -- Lucas Pili <lucas.pili@zoomagri.com>  Fri, 02 Oct 2026 18:01:00 -0300
+ -- Lucas Pili <lucas.pili@zoomagri.com>  Sat, 03 Oct 2026 14:30:53 -0300
 
